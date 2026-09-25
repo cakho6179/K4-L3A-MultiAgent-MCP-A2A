@@ -347,7 +347,7 @@ def _claim_assessments(
 
 def _refund_claim_verdict(refund: Decimal, order_total: Decimal) -> tuple[str, float]:
     if refund <= 0:
-        return "unsupported", 0.88
+        return "unsupported", 0.90
     if order_total > 0 and refund >= order_total:
-        return "supported", 0.85
-    return "partially_supported", 0.85
+        return "supported", 0.87
+    return "partially_supported", 0.87

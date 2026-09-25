@@ -18,35 +18,40 @@ UNSUPPORTED_CLAIM = "unsupported_claim"
 
 # How decisive the winning rule is. Confidence is reported as-is, so these double
 # as the calibration targets: an explicit status field beats an arithmetic guess.
+# v2: nudged toward observed accuracy (public semantic ~94%) — calibration is
+# maximized when reported confidence matches the true hit rate.
 _CONFIDENCE = {
-    "canceled_order_paid": 0.93,
-    "unavailable_order_paid": 0.93,
-    "payment_mismatch": 0.92,
-    "refund_failed": 0.92,
-    "refund_pending": 0.92,
-    "late_delivery_seller": 0.90,
-    "late_delivery_logistics": 0.90,
-    "duplicate_charge": 0.87,
-    "valid_split_payment": 0.87,
-    UNSUPPORTED_CLAIM: 0.78,
+    "canceled_order_paid": 0.95,
+    "unavailable_order_paid": 0.95,
+    "payment_mismatch": 0.94,
+    "refund_failed": 0.94,
+    "refund_pending": 0.94,
+    "late_delivery_seller": 0.92,
+    "late_delivery_logistics": 0.92,
+    "duplicate_charge": 0.90,
+    "valid_split_payment": 0.90,
+    UNSUPPORTED_CLAIM: 0.82,
     INSUFFICIENT_EVIDENCE: 0.55,
 }
 
-# Evidence domains that actually support each verdict. Citing anything else costs
-# evidence precision, so the workflow only attaches the groups listed here.
+# Evidence domains that actually support each verdict. Each plan mirrors exactly
+# the data `classify()` reads for that issue: citing an unused domain costs
+# precision, omitting a used one costs recall.
 EVIDENCE_PLAN = {
-    # get_order already carries every delivery timestamp, so the shipment domain
-    # only adds value where an authoritative shipment event exists.
-    "canceled_order_paid": ("order", "item", "payment", "policy"),
+    # canceled: order status + captures decide; totals/sellers unused (platform party).
+    "canceled_order_paid": ("order", "payment", "policy"),
     "unavailable_order_paid": ("order", "item", "payment", "seller", "policy"),
     "late_delivery_seller": ("order", "item", "shipment", "seller", "policy"),
     "late_delivery_logistics": ("order", "item", "shipment", "policy"),
     "valid_split_payment": ("order", "item", "payment", "policy"),
-    "payment_mismatch": ("order", "item", "payment", "policy"),
+    # mismatch: the reconciliation event decides; order_total unused.
+    "payment_mismatch": ("order", "payment", "policy"),
     "duplicate_charge": ("order", "item", "payment", "policy"),
+    # refunds: captures + refund lifecycle; item totals unused.
     "refund_pending": ("order", "payment", "refund", "policy"),
     "refund_failed": ("order", "payment", "refund", "policy"),
-    UNSUPPORTED_CLAIM: ("order", "payment", "shipment", "policy"),
+    # unsupported: must show payment, refund and shipment were all checked empty.
+    UNSUPPORTED_CLAIM: ("order", "payment", "refund", "shipment", "policy"),
     INSUFFICIENT_EVIDENCE: ("order", "policy"),
 }
 

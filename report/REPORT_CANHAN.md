@@ -5,7 +5,7 @@
 | Họ tên | _(điền họ tên)_ |
 | Mã học viên | _(điền mã HV)_ |
 | Lớp | H202 |
-| Team | h202-02881 — Khô Gà |
+| Team | h202-02881 — Cá Khô |
 | Repo | https://github.com/cakho6179/K4-L3A-MultiAgent-MCP-A2A |
 | Variant | l3a (`l3a-competition-v1`) |
 | Điểm public | 92.979 — hạng 39/250 (leaderboard L3A) |
